@@ -34,8 +34,9 @@ body {
   padding: 16px 20px 8px;
 }
 
-.brand { display: flex; justify-content: center; margin: 8px 0 28px; }
-.logo { width: 72px; height: 72px; object-fit: contain; border-radius: 50%; background: #fff; }
+.brand { display: flex; justify-content: flex-start; margin: 8px 0 28px; }
+/* The logo file is square with the badge in the middle; crop to the badge. */
+.logo { display: block; width: 156px; height: 64px; object-fit: cover; object-position: center; }
 .logo-fallback { font-weight: 900; font-size: 28px; color: var(--orange); letter-spacing: -0.5px; }
 
 h1 {

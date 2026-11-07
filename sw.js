@@ -1,6 +1,6 @@
 // Offline support: the card must open at the till even with no signal.
 // Paths are relative to this file, so the app works at a domain root or in a subfolder (GitHub Pages).
-var CACHE = 'hullpops-card-v4';
+var CACHE = 'hullpops-card-v5';
 var LOGO = 'https://hullpops.co.uk/cdn/shop/files/logo_300x300.png?v=1614305197';
 var SHELL = [
   './', 'index.html', 'styles.css', 'app.js', 'qrcode.js', 'manifest.webmanifest',
