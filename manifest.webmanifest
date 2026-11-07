@@ -1,0 +1,16 @@
+{
+  "name": "Hull Pops Membership Card",
+  "short_name": "Hull Pops",
+  "description": "Your Hull Pops membership card — show it at the till.",
+  "id": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#17171a",
+  "theme_color": "#ff6b3e",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
