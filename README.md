@@ -21,7 +21,7 @@ Print a QR code of the site URL for the counter so customers can sign up on the 
 - The logo at the top of the page loads from the Shopify CDN. If it ever changes, update the URL in `index.html` and `sw.js`.
 
 ## After changing files
-Bump `CACHE` in `sw.js` (e.g. `hullpops-card-v4`) so phones fetch the new version.
+Bump `CACHE` in `sw.js` (e.g. `hullpops-card-v5`) so phones fetch the new version.
 
 ## Files
 `index.html`, `styles.css`, `app.js` – the app
