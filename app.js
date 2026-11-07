@@ -5,7 +5,7 @@
   var PARAM = 'm'; // ?m=<base64url email> — keeps the card in the URL so a home-screen copy still has it
 
   var $ = function (id) { return document.getElementById(id); };
-  var views = { enter: $('view-enter'), confirm: $('view-confirm'), card: $('view-card') };
+  var views = { install: $('view-install'), enter: $('view-enter'), confirm: $('view-confirm'), card: $('view-card') };
   var pendingEmail = '';
   var deferredInstall = null;
 
@@ -79,42 +79,61 @@
     renderQR(email);
     $('card-email').textContent = email;
     setUrl(email);
-    setupInstall();
+    $('card-install').hidden = !needsInstall();
     show('card');
     keepAwake();
   }
 
-  // ---------- add to home screen ----------
+  // ---------- browser vs Home Screen ----------
+  // Opened from the Home Screen = "standalone". In a normal phone browser we ask people to add it first,
+  // because on iPhone the Home Screen copy has its own storage and wouldn't see an email typed in Safari.
   function isStandalone() {
-    return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+    return window.matchMedia('(display-mode: standalone)').matches ||
+           window.matchMedia('(display-mode: fullscreen)').matches ||
+           window.navigator.standalone === true;
   }
-  function isIOS() {
-    var ua = navigator.userAgent;
-    return /iphone|ipad|ipod/i.test(ua) || (/macintosh/i.test(ua) && navigator.maxTouchPoints > 1);
+  var UA = navigator.userAgent;
+  function isIOS() { return /iphone|ipad|ipod/i.test(UA) || (/macintosh/i.test(UA) && navigator.maxTouchPoints > 1); }
+  function isAndroid() { return /android/i.test(UA); }
+  function isInApp() { return /FBAN|FBAV|FB_IAB|Instagram|Line\/|TikTok|musical_ly|Snapchat|Twitter|LinkedInApp|Pinterest/i.test(UA); }
+
+  var SKIP_KEY = 'hullpops.skipInstall';
+  function skipped() { try { return sessionStorage.getItem(SKIP_KEY) === '1'; } catch (e) { return false; } }
+  function setSkipped() { try { sessionStorage.setItem(SKIP_KEY, '1'); } catch (e) {} }
+
+  function needsInstall() { return (isIOS() || isAndroid()) && !isStandalone(); }
+
+  function renderInstall() {
+    var inApp = isInApp();
+    $('inapp-steps').hidden = !inApp;
+    $('inapp-open').textContent = isIOS() ? 'Open in Safari' : 'Open in browser';
+    $('ios-steps').hidden = inApp || !isIOS();
+    $('android-prompt').hidden = inApp || !isAndroid() || !deferredInstall;
+    $('android-steps').hidden = inApp || !isAndroid() || !!deferredInstall;
   }
-  function setupInstall() {
-    var box = $('install');
-    if (isStandalone()) { box.hidden = true; return; }
-    box.hidden = false;
-    $('install-btn').hidden = !deferredInstall;
-    $('ios-steps').hidden = !isIOS();
-    $('other-steps').hidden = isIOS() || !!deferredInstall;
-  }
+  function showInstall() { renderInstall(); show('install'); }
 
   window.addEventListener('beforeinstallprompt', function (e) {
     e.preventDefault();
     deferredInstall = e;
-    if (!views.card.hidden) setupInstall();
+    renderInstall();
   });
   window.addEventListener('appinstalled', function () {
     deferredInstall = null;
-    $('install').hidden = true;
+    ['ios-steps', 'android-prompt', 'android-steps', 'inapp-steps'].forEach(function (id) { $(id).hidden = true; });
+    $('installed-msg').hidden = false;
   });
   $('install-btn').addEventListener('click', function () {
     if (!deferredInstall) return;
     deferredInstall.prompt();
-    deferredInstall.userChoice.finally(function () { deferredInstall = null; setupInstall(); });
+    deferredInstall.userChoice.finally(function () { deferredInstall = null; renderInstall(); });
   });
+  $('skip-install').addEventListener('click', function () {
+    setSkipped();
+    var email = $('card-email').textContent;
+    if (email) { show('card'); } else { show('enter'); $('email').focus(); }
+  });
+  $('card-install').addEventListener('click', showInstall);
 
   // Keep the screen on while the card is showing (helps at the till). Silently skipped where unsupported.
   var wakeLock = null;
@@ -165,8 +184,9 @@
 
   $('change-email').addEventListener('click', function () {
     var current = $('card-email').textContent;
-    if (!window.confirm('Replace the card for ' + current + '?')) return;
+    if (!window.confirm('Remove the card for ' + current + '?')) return;
     clear(); setUrl('');
+    $('card-email').textContent = '';
     if (wakeLock) { wakeLock.release().catch(function () {}); wakeLock = null; }
     $('email').value = current;
     show('enter');
@@ -179,6 +199,8 @@
   if (initial && !validate(initial)) {
     save(initial);
     showCard(initial);
+  } else if (needsInstall() && !skipped()) {
+    showInstall();
   } else {
     show('enter');
   }
