@@ -1,10 +1,10 @@
 // Offline support: the card must open at the till even with no signal.
 // Paths are relative to this file, so the app works at a domain root or in a subfolder (GitHub Pages).
-var CACHE = 'hullpops-card-v6';
+var CACHE = 'hullpops-card-v7';
 var SHELL = [
   './', 'index.html', 'styles.css', 'app.js', 'qrcode.js', 'manifest.webmanifest',
-  'icons/icon-192.png', 'icons/icon-512.png', 'icons/apple-touch-icon.png',
-  'icons/logo.png', 'icons/favicon-48.png'
+  'icons/icon-192-v2.png', 'icons/icon-512-v2.png', 'icons/apple-touch-icon-v2.png',
+  'icons/logo.png', 'icons/favicon-48-v2.png'
 ];
 var INDEX = new URL('index.html', self.registration.scope).href;
 
