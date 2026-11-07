@@ -5,32 +5,33 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Hull Pops Membership Card</title>
   <meta name="description" content="Your Hull Pops membership card. Show it at the till.">
-  <meta name="theme-color" content="#17171a">
+  <meta name="theme-color" content="#ffffff">
   <link rel="manifest" href="manifest.webmanifest">
-  <link rel="icon" href="icons/icon-192.png" type="image/png">
+  <link rel="icon" href="icons/favicon-48.png" type="image/png" sizes="48x48">
+  <link rel="icon" href="icons/icon-192.png" type="image/png" sizes="192x192">
   <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="Hull Pops">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <main class="app">
-    <header class="brand">
-      <img class="logo" src="https://hullpops.co.uk/cdn/shop/files/logo_300x300.png?v=1614305197"
-           alt="Hull Pops" width="156" height="64"
-           onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'logo-fallback',textContent:'Hull Pops'}))">
-    </header>
+  <nav class="nav">
+    <img class="logo" src="icons/logo.png" alt="Hull Pops" width="150" height="56">
+    <button id="nav-btn" class="nav-btn" hidden></button>
+  </nav>
 
-    <!-- STEP 0 (phone browser only): add to Home Screen first -->
+  <main class="app">
+    <!-- Phone browser: add to Home Screen first -->
     <section id="view-install" class="view" hidden>
       <h1>Add to your Home&nbsp;Screen</h1>
+      <p class="lead">Your card, one tap away at the till.</p>
 
       <!-- iPhone / iPad -->
       <ol id="ios-steps" class="steps" hidden>
-        <li><span class="num">1</span><span>Tap <strong>Share</strong> <span class="ios-share" aria-hidden="true"></span><small>(may be under <strong>···</strong>)</small></span></li>
-        <li><span class="num">2</span><span>Tap <strong>Add to Home Screen</strong></span></li>
+        <li><span class="num">1</span><span>Tap <strong>Share</strong> <span class="ios-share" aria-hidden="true"></span><small>In Safari it may be under <strong>···</strong></small></span></li>
+        <li><span class="num">2</span><span>Tap <strong>Add to Home Screen</strong><small>Scroll down if you can’t see it</small></span></li>
         <li><span class="num">3</span><span>Open <strong>Hull Pops</strong> from your Home Screen</span></li>
       </ol>
 
@@ -54,11 +55,9 @@
       </ol>
 
       <p id="installed-msg" class="big-note" hidden>Done! Open <strong>Hull Pops</strong> from your Home Screen.</p>
-
-      <button id="skip-install" class="link">Skip, use in browser</button>
     </section>
 
-    <!-- STEP 1: enter email -->
+    <!-- Enter email -->
     <section id="view-enter" class="view" hidden>
       <h1>Your email</h1>
       <p class="lead">The one you use at Hull Pops.</p>
@@ -69,19 +68,12 @@
                autocapitalize="off" autocorrect="off" spellcheck="false"
                placeholder="you@example.com" required>
         <p id="email-error" class="error" role="alert" hidden></p>
-        <button type="submit" class="btn btn-primary">Continue</button>
+        <button type="submit" class="btn btn-primary">Get my card</button>
       </form>
+      <button id="cancel-change" class="link" hidden>Cancel</button>
     </section>
 
-    <!-- STEP 2: confirm -->
-    <section id="view-confirm" class="view" hidden>
-      <h1>Is this right?</h1>
-      <p id="confirm-email" class="confirm-email"></p>
-      <button id="confirm-yes" class="btn btn-primary">Yes, that’s me</button>
-      <button id="confirm-no" class="btn btn-ghost">Fix it</button>
-    </section>
-
-    <!-- STEP 3: the card -->
+    <!-- The card -->
     <section id="view-card" class="view" hidden>
       <div class="card" aria-label="Hull Pops membership card">
         <div class="card-top">
@@ -92,9 +84,7 @@
         <p id="card-email" class="card-email"></p>
       </div>
       <p class="hint">Show this at the till</p>
-
-      <button id="card-install" class="btn btn-primary" hidden>Add to Home Screen</button>
-      <button id="change-email" class="link">Change email</button>
+      <button id="change-email" class="link">Wrong email? Change it</button>
     </section>
   </main>
 

@@ -1,20 +1,17 @@
 // Offline support: the card must open at the till even with no signal.
 // Paths are relative to this file, so the app works at a domain root or in a subfolder (GitHub Pages).
-var CACHE = 'hullpops-card-v5';
-var LOGO = 'https://hullpops.co.uk/cdn/shop/files/logo_300x300.png?v=1614305197';
+var CACHE = 'hullpops-card-v6';
 var SHELL = [
   './', 'index.html', 'styles.css', 'app.js', 'qrcode.js', 'manifest.webmanifest',
-  'icons/icon-192.png', 'icons/icon-512.png', 'icons/apple-touch-icon.png'
+  'icons/icon-192.png', 'icons/icon-512.png', 'icons/apple-touch-icon.png',
+  'icons/logo.png', 'icons/favicon-48.png'
 ];
 var INDEX = new URL('index.html', self.registration.scope).href;
 
 self.addEventListener('install', function (e) {
   e.waitUntil(
     caches.open(CACHE).then(function (c) {
-      return c.addAll(SHELL).then(function () {
-        // Logo is cross-origin; cache it opaquely, and don't fail install if it's unreachable.
-        return fetch(LOGO, { mode: 'no-cors' }).then(function (r) { return c.put(LOGO, r); }).catch(function () {});
-      });
+      return c.addAll(SHELL);
     }).then(function () { return self.skipWaiting(); })
   );
 });
@@ -57,6 +54,6 @@ self.addEventListener('fetch', function (e) {
     return;
   }
 
-  // Logo (cross-origin): cache first.
+  // Anything else: cache first.
   e.respondWith(caches.match(req).then(function (hit) { return hit || fetch(req); }));
 });

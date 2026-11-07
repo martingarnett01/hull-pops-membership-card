@@ -5,14 +5,12 @@
   var PARAM = 'm'; // ?m=<base64url email> — keeps the card in the URL so a home-screen copy still has it
 
   var $ = function (id) { return document.getElementById(id); };
-  var views = { install: $('view-install'), enter: $('view-enter'), confirm: $('view-confirm'), card: $('view-card') };
-  var pendingEmail = '';
+  var views = { install: $('view-install'), enter: $('view-enter'), card: $('view-card') };
   var deferredInstall = null;
 
   // ---------- storage (wrapped: private mode / some in-app browsers throw) ----------
   function save(email) { try { localStorage.setItem(STORAGE_KEY, email); } catch (e) {} }
   function load() { try { return localStorage.getItem(STORAGE_KEY) || ''; } catch (e) { return ''; } }
-  function clear() { try { localStorage.removeItem(STORAGE_KEY); } catch (e) {} }
 
   // ---------- URL helpers ----------
   function b64urlEncode(s) {
@@ -57,7 +55,21 @@
   // ---------- views ----------
   function show(name) {
     Object.keys(views).forEach(function (k) { views[k].hidden = k !== name; });
+    updateNav(name);
     window.scrollTo(0, 0);
+  }
+
+  // Top-right button, phone browser only: "Use in browser" on the steps, "Add to Home Screen" everywhere else.
+  function updateNav(name) {
+    var btn = $('nav-btn');
+    btn.hidden = !needsInstall();
+    btn.textContent = name === 'install' ? 'Use in browser' : 'Add to Home Screen';
+    btn.className = 'nav-btn' + (name === 'install' ? '' : ' nav-btn-primary');
+  }
+  function currentEmail() { return $('card-email').textContent; }
+  function leaveInstall() {
+    setSkipped();
+    if (currentEmail()) { show('card'); } else { show('enter'); }
   }
 
   function renderQR(email) {
@@ -79,7 +91,7 @@
     renderQR(email);
     $('card-email').textContent = email;
     setUrl(email);
-    $('card-install').hidden = !needsInstall();
+    $('cancel-change').hidden = true;
     show('card');
     keepAwake();
   }
@@ -97,9 +109,10 @@
   function isAndroid() { return /android/i.test(UA); }
   function isInApp() { return /FBAN|FBAV|FB_IAB|Instagram|Line\/|TikTok|musical_ly|Snapchat|Twitter|LinkedInApp|Pinterest/i.test(UA); }
 
+  // Remembered so people who chose the browser aren't sent back to the steps every visit.
   var SKIP_KEY = 'hullpops.skipInstall';
-  function skipped() { try { return sessionStorage.getItem(SKIP_KEY) === '1'; } catch (e) { return false; } }
-  function setSkipped() { try { sessionStorage.setItem(SKIP_KEY, '1'); } catch (e) {} }
+  function skipped() { try { return localStorage.getItem(SKIP_KEY) === '1'; } catch (e) { return false; } }
+  function setSkipped() { try { localStorage.setItem(SKIP_KEY, '1'); } catch (e) {} }
 
   function needsInstall() { return (isIOS() || isAndroid()) && !isStandalone(); }
 
@@ -128,12 +141,9 @@
     deferredInstall.prompt();
     deferredInstall.userChoice.finally(function () { deferredInstall = null; renderInstall(); });
   });
-  $('skip-install').addEventListener('click', function () {
-    setSkipped();
-    var email = $('card-email').textContent;
-    if (email) { show('card'); } else { show('enter'); $('email').focus(); }
+  $('nav-btn').addEventListener('click', function () {
+    if (!views.install.hidden) { leaveInstall(); } else { showInstall(); }
   });
-  $('card-install').addEventListener('click', showInstall);
 
   // Keep the screen on while the card is showing (helps at the till). Silently skipped where unsupported.
   var wakeLock = null;
@@ -162,9 +172,9 @@
       if (window.confirm('Did you mean ' + fixed + '?')) email = fixed;
     }
     err.hidden = true; input.removeAttribute('aria-invalid');
-    pendingEmail = email;
-    $('confirm-email').textContent = email;
-    show('confirm');
+    input.blur();
+    save(email);
+    showCard(email);
   });
 
   $('email').addEventListener('input', function () {
@@ -172,26 +182,16 @@
     this.removeAttribute('aria-invalid');
   });
 
-  $('confirm-yes').addEventListener('click', function () {
-    save(pendingEmail);
-    showCard(pendingEmail);
-  });
-  $('confirm-no').addEventListener('click', function () {
-    $('email').value = pendingEmail;
-    show('enter');
-    $('email').focus();
-  });
-
+  // Change email: back to the form with the current one filled in; the card stays until a new one is saved.
   $('change-email').addEventListener('click', function () {
-    var current = $('card-email').textContent;
-    if (!window.confirm('Remove the card for ' + current + '?')) return;
-    clear(); setUrl('');
-    $('card-email').textContent = '';
     if (wakeLock) { wakeLock.release().catch(function () {}); wakeLock = null; }
-    $('email').value = current;
+    $('email').value = currentEmail();
+    $('cancel-change').hidden = false;
     show('enter');
     $('email').focus();
+    $('email').select();
   });
+  $('cancel-change').addEventListener('click', function () { show('card'); keepAwake(); });
 
   // ---------- start ----------
   var fromUrl = emailFromUrl();
