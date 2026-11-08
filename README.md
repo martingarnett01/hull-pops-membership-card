@@ -20,10 +20,10 @@ Print a QR code of the site URL for the counter so customers can sign up on the 
 ## Icons and logo
 - `icons/icon-*-v2.png`, `apple-touch-icon-v2.png` and `favicon-48-v2.png` are made from the hullpops.co.uk favicon (`logo_mark-circle-whiteBK.png`).
 - If you change an icon, give the file a new name (e.g. `-v3`) and update `index.html`, `manifest.webmanifest` and `sw.js`. iPhones cache icons by file name, so overwriting the old file isn't enough.
-- `icons/logo.png` is the hullpops.co.uk logo, stored here so it works offline.
+- The navbar logo is built into `index.html` (as a data URI) so it can never half-load. `icons/logo.png` is the same image as a file.
 
 ## After changing files
-Bump `CACHE` in `sw.js` (e.g. `hullpops-card-v9`) so phones fetch the new version.
+Bump `CACHE` in `sw.js` (e.g. `hullpops-card-v10`) so phones fetch the new version.
 
 ## Files
 `index.html`, `styles.css`, `app.js` – the app
