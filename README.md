@@ -23,7 +23,7 @@ Print a QR code of the site URL for the counter so customers can sign up on the 
 - `icons/logo.png` is the hullpops.co.uk logo, stored here so it works offline.
 
 ## After changing files
-Bump `CACHE` in `sw.js` (e.g. `hullpops-card-v8`) so phones fetch the new version.
+Bump `CACHE` in `sw.js` (e.g. `hullpops-card-v9`) so phones fetch the new version.
 
 ## Files
 `index.html`, `styles.css`, `app.js` – the app
